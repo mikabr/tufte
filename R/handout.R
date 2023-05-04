@@ -47,6 +47,9 @@ tufte_pdf <- function(documentclass = c("tufte-handout", "tufte-book"), fig_widt
     }
   )
 
+  # disable latex-div.lua
+  format$pandoc$lua_filters <- rmarkdown::pkg_file_lua("pagebreak.lua")
+
   knitr::knit_engines$set(marginfigure = function(options) {
     options$type <- "marginfigure"
     eng_block <- knitr::knit_engines$get("block")
