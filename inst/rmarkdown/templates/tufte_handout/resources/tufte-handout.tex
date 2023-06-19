@@ -107,7 +107,8 @@ $if(csl-refs)$
 \newlength{\cslentryspacingunit} % times entry-spacing
 \setlength{\cslentryspacingunit}{\parskip}
 \newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
- {% don't indent paragraphs
+ {\begin{fullwidth}
+  % don't indent paragraphs
   \setlength{\parindent}{0pt}
   % turn on hanging indent if param 1 is 1
   \ifodd #1
@@ -117,7 +118,7 @@ $if(csl-refs)$
   % set entry spacing
   \setlength{\parskip}{#2\cslentryspacingunit}
  }%
- {}
+ {\end{fullwidth}}
 \usepackage{calc}
 \newcommand{\CSLBlock}[1]{#1\hfill\break}
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
@@ -164,9 +165,43 @@ $endif$
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
-% title / author / date
+% https://tex.stackexchange.com/questions/473859/subtitle-in-tufte-book
+% define commands for subtitle
+\makeatletter
+\newcommand{\plainsubtitle}{}% plain-text-only subtitle
+\newcommand{\subtitle}[1]{%
+  \gdef\@subtitle{#1}%
+  \renewcommand{\plainsubtitle}{#1}% use provided plain-text title
+  \hypersetup{pdftitle={\plaintitle: \plainsubtitle{}}}% set the PDF metadata title
+}
+
+% override tufte \maketitlepage command to include subtitle
+\renewcommand{\maketitlepage}[0]{%
+  \cleardoublepage%
+  {%
+  \sffamily\scshape%
+  \begin{fullwidth}%
+  \fontsize{18}{20}\selectfont\par\noindent\textcolor{darkgray}{\thanklessauthor}%
+  \vspace{11.5pc}%
+  \fontsize{36}{40}\selectfont\par\noindent\textcolor{darkgray}{\thanklesstitle}%
+  \vspace{5pc}%
+  \raggedright%
+  \fontsize{24}{28}\selectfont\par\noindent\textcolor{darkgray}{\plainsubtitle}%
+  \vfill%
+  \fontsize{14}{16}\selectfont\par\noindent\thanklesspublisher%
+  \end{fullwidth}%
+  }
+  \thispagestyle{empty}%
+  \clearpage%
+}
+\makeatother
+
+% title / subtitle / author / date
 $if(title)$
 \title$if(runningheader)$[$runningheader$]$endif${$title$}
+$endif$
+$if(subtitle)$
+\subtitle{$subtitle$}
 $endif$
 $if(author)$
 \author{$for(author)$$author$$sep$ \and $endfor$}
